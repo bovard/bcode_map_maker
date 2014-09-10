@@ -26,9 +26,9 @@ var MINE = '3';
 var ENCAMP = '@';
 var tiles = [OPEN, MINE, ENCAMP];
 var tileToImageUrl = {};
-tileToImageUrl[OPEN] = '/static/images/open.png';
-tileToImageUrl[MINE] = '/static/images/mine.png';
-tileToImageUrl[ENCAMP] = '/static/images/encampment.png';
+tileToImageUrl[OPEN] = 'static/images/open.png';
+tileToImageUrl[MINE] = 'static/images/mine.png';
+tileToImageUrl[ENCAMP] = 'static/images/encampment.png';
 
 
 var MapEditor = React.createClass({
