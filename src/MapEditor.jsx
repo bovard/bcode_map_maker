@@ -12,7 +12,6 @@ var Cell = React.createClass({
         this.props.onClick(this.props.x, this.props.y, this.props.tile)
     },
     render: function() {
-        console.log(tileToImageUrl[this.props.tile]);
         return (
             <td onClick={this.onClick}><img src={tileToImageUrl[this.props.tile]} /></td>
         );
@@ -58,11 +57,9 @@ var MapEditor = React.createClass({
     },
     render: function() {
         var tableContents = [];
-        console.log(this.state.map);
         for (var i = 0; i < this.props.width / 2; i++) {
             var cells = [];
             for (var j = 0; j < this.props.height / 2; j++) {
-                console.log(i, j, this.state.map[i][j]);
                 cells.push(<Cell x={i} y={j} onClick={this.handleCellClick} tile={this.state.map[i][j]} />);
             }
             tableContents.push(<tr>{cells}</tr>);
