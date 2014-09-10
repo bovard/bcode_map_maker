@@ -33,7 +33,7 @@ var Main = React.createClass({
         if (this.state.status === STATUS.INIT) {
             return (<CreateNew createMap={this.createNewMap} />);
         } else if (this.state.status === STATUS.CREATING) {
-            return (<MapEditor height={40} width={60} symmetry={'x'} />);
+            return (<MapEditor height={this.state.height} width={this.state.width} symmetry={this.state.symmetry} />);
         }
     }
 });

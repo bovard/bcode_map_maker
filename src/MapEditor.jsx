@@ -3,18 +3,22 @@ var React = require('react');
 
 var Cell = React.createClass({
     propTypes: {
-        onClick: React.PropTypes.func.isRequired,
+        onClick: React.PropTypes.func,
         x: React.PropTypes.number.isRequired,
         y: React.PropTypes.number.isRequired,
-        tile: React.PropTypes.string.isRequired
+        tile: React.PropTypes.string.isRequired,
+        mirror: React.PropTypes.bool.isRequired
     },
     onClick: function() {
         this.props.onClick(this.props.x, this.props.y, this.props.tile)
     },
     render: function() {
-        return (
-            <td onClick={this.onClick}><img src={tileToImageUrl[this.props.tile]} /></td>
-        );
+        var td;
+        if (this.props.mirror) {
+            return (<td><img style={{opacity: 0.4}} src={tileToImageUrl[this.props.tile]} /></td>);
+        } else {
+            return (<td onClick={this.onClick}><img src={tileToImageUrl[this.props.tile]} /></td>);
+        }
 
 
     }
@@ -30,6 +34,14 @@ tileToImageUrl[MINE] = 'static/images/mine.png';
 tileToImageUrl[ENCAMP] = 'static/images/encampment.png';
 
 
+function xAxis(x, y, height, width) {
+    return !(y < (height / 2) + 1);
+}
+
+function yAxis(x, y, height, width) {
+    return !(x < (width / 2) + 1);
+}
+
 var MapEditor = React.createClass({
     propTypes: {
         symmetry: React.PropTypes.string.isRequired,
@@ -39,13 +51,15 @@ var MapEditor = React.createClass({
     },
     getInitialState: function() {
         var map = [];
-        for (var i = 0; i < this.props.width / 2; i++) {
+        for (var i = 0; i < this.props.width; i++) {
             map.push([]);
-            for (var j = 0; j < this.props.height / 2; j++) {
+            for (var j = 0; j < this.props.height; j++) {
                 map[i].push(OPEN);
             }
         }
+        var mirror = xAxis;
         return ({
+            isMirror: mirror,
             map: map
         })
     },
@@ -57,10 +71,15 @@ var MapEditor = React.createClass({
     },
     render: function() {
         var tableContents = [];
-        for (var i = 0; i < this.props.width / 2; i++) {
+        for (var i = 0; i < this.props.width; i++) {
             var cells = [];
-            for (var j = 0; j < this.props.height / 2; j++) {
-                cells.push(<Cell x={i} y={j} onClick={this.handleCellClick} tile={this.state.map[i][j]} />);
+            for (var j = 0; j < this.props.height; j++) {
+                console.log(i, j, this.state.isMirror(i, j, this.state.height, this.state.width));
+                if (this.state.isMirror(i, j, this.props.height, this.props.width)) {
+                    cells.push(<Cell x={i} y={j} mirror={true} tile={this.state.map[i][j]} />);
+                } else {
+                    cells.push(<Cell x={i} y={j} mirror={false} onClick={this.handleCellClick} tile={this.state.map[i][j]} />);
+                }
             }
             tableContents.push(<tr>{cells}</tr>);
         }
