@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 var React = require('react');
 
+var marked = require('marked');
+
 var Button = require('react-bootstrap').Button;
 var Col = require('react-bootstrap').Col;
 var Row = require('react-bootstrap').Row;
@@ -10,6 +12,20 @@ var Cell = require('./Cell');
 
 var createXML = require('./createXML');
 var constants = require('./constants');
+
+var mapConstraints = [
+    '## Map Constraints',
+    'Official maps used in scrimmages and tournaments must all satisfy the following conditions.',
+    '  - Maps are completely symmetric either by reflection or 180 degree rotation.',
+    '  - The width and height of the map are guaranteed to be between 20 and 70, inclusive.',
+    '  - The map cannot have neutral mines on the 4 squares orthogonally adjacent to either HQ.',
+    '  - There will be a minimum of 5 encampment squares on the map.',
+    '  - It will be possible for a soldier to get adjacent to the enemy HQ by turn 200, given that you only make one soldier and research/capture nothing, and the opposing team does nothing.',
+    '  - The distance between the spawn points will be at least 10 units (Euclidean distance).'
+];
+
+var markedMap = marked(mapConstraints.join('\n'));
+
 
 function yAxis(x, y, height, width) {
     return !(y < (height / 2));
@@ -173,12 +189,20 @@ var MapEditor = React.createClass({
                     </tbody>
                 </table>
                 <Row>
+                    <Col xs={12}>
+                        <br />
+                    </Col>
+                </Row>
+                <Row>
                     <Col xs={6}>
                         <Button onClick={this.startOver} bsStyle="danger">Start Over</Button>
                     </Col>
                     <Col xs={6}>
                         <Button onClick={this.exportMap} bsStyle="success">Export</Button>
                     </Col>
+                </Row>
+                <Row>
+                    <span dangerouslySetInnerHTML={{__html: markedMap}} />
                 </Row>
             </Well>
         )
