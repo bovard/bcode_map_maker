@@ -117,7 +117,7 @@ var MapEditor = React.createClass({
         return rows.join('\n');
     },
     exportMap: function() {
-        var mapString = this.getMapString()
+        var mapString = this.getMapString();
         var mapFile = createXML(this.props.height, this.props.width, mapString);
         var pom = document.createElement('a');
         pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(mapFile));
