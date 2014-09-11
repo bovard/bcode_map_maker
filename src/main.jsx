@@ -27,8 +27,11 @@ var Main = React.createClass({
             height: height,
             width: width,
             symmetry: symmetry,
-            name: name
+            name: name || 'test'
         });
+    },
+    startOver: function() {
+        this.setState(this.getInitialState());
     },
     render: function() {
         if (this.state.status === STATUS.INIT) {
@@ -36,6 +39,7 @@ var Main = React.createClass({
         } else if (this.state.status === STATUS.CREATING) {
             return (
                 <MapEditor
+                    startOver={this.startOver}
                     height={this.state.height}
                     width={this.state.width}
                     name={this.state.name}

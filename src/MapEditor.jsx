@@ -2,6 +2,8 @@
 var React = require('react');
 
 var Button = require('react-bootstrap').Button;
+var Col = require('react-bootstrap').Col;
+var Row = require('react-bootstrap').Row;
 var Well = require('react-bootstrap').Well;
 
 var Cell = require('./Cell');
@@ -32,6 +34,24 @@ function xAxisMirrorCell(x, y, height, width) {
     return [[x, y]];
 }
 
+
+function diag(x, y, height, width) {
+    return (y > x);
+}
+
+function diagMirrorCell(x, y, height, width) {
+    return [[y, x]];
+}
+
+function reverseDiag(x, y, height, width) {
+    return !(x + y < height);
+}
+
+function reverseDiagMirrorCell(x, y, height, width) {
+    return [[height - y - 1, width - x - 1]];
+
+}
+
 var STATE = {
     NORMAL: 'normal',
     PLACE_HQ: 'place_hq'
@@ -42,7 +62,8 @@ var MapEditor = React.createClass({
         symmetry: React.PropTypes.string.isRequired,
         height: React.PropTypes.number.isRequired,
         width: React.PropTypes.number.isRequired,
-        name: React.PropTypes.string.isRequired
+        name: React.PropTypes.string.isRequired,
+        startOver: React.PropTypes.func.isRequired
         //tiles: React.PropTypes.array.isRequired
     },
     getInitialState: function() {
@@ -58,9 +79,15 @@ var MapEditor = React.createClass({
         if (this.props.symmetry === constants.symmetryModes[1]) {
             mirror = yAxis;
             mirrorCell = yAxisMirrorCell;
+        } else if (this.props.symmetry === constants.symmetryModes[2]) {
+            mirror = diag;
+            mirrorCell = diagMirrorCell;
+        } else if (this.props.symmetry === constants.symmetryModes[3]) {
+            mirror = reverseDiag;
+            mirrorCell = reverseDiagMirrorCell;
         }
-        map[1][1] = 'a';
-        var b = mirrorCell(1, 1, this.props.height, this.props.width)[0];
+        map[5][1] = 'a';
+        var b = mirrorCell(5, 1, this.props.height, this.props.width)[0];
         map[b[0]][b[1]] = 'b';
         return ({
             isMirror: mirror,
@@ -122,6 +149,9 @@ var MapEditor = React.createClass({
         pom.setAttribute('download', this.props.name + '.xml');
         pom.click();
     },
+    startOver: function() {
+        this.props.startOver();
+    },
     render: function() {
         var tableContents = [];
         for (var i = 0; i < this.props.width; i++) {
@@ -142,7 +172,14 @@ var MapEditor = React.createClass({
                         {tableContents}
                     </tbody>
                 </table>
-                <Button onClick={this.exportMap} bsStyle="success">Export</Button>
+                <Row>
+                    <Col xs={6}>
+                        <Button onClick={this.startOver} bsStyle="danger">Start Over</Button>
+                    </Col>
+                    <Col xs={6}>
+                        <Button onClick={this.exportMap} bsStyle="success">Export</Button>
+                    </Col>
+                </Row>
             </Well>
         )
     }

@@ -16,7 +16,7 @@ tileToImageUrl[B_HQ] = 'static/images/hq2.png';
 
 
 module.exports = {
-    symmetryModes: ['x-axis', 'y-axis'],
+    symmetryModes: ['x-axis', 'y-axis', 'y=-x (square only)', 'y=x (square only)'],
     OPEN: OPEN,
     MINE: MINE,
     ENCAMP: ENCAMP,
