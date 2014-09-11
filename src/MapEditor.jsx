@@ -1,46 +1,39 @@
 /** @jsx React.DOM */
 var React = require('react');
 
-var Cell = React.createClass({
-    propTypes: {
-        onClick: React.PropTypes.func,
-        x: React.PropTypes.number.isRequired,
-        y: React.PropTypes.number.isRequired,
-        tile: React.PropTypes.string.isRequired,
-        mirror: React.PropTypes.bool.isRequired
-    },
-    onClick: function() {
-        this.props.onClick(this.props.x, this.props.y, this.props.tile)
-    },
-    render: function() {
-        var td;
-        if (this.props.mirror) {
-            return (<td><img style={{opacity: 0.4}} src={tileToImageUrl[this.props.tile]} /></td>);
-        } else {
-            return (<td onClick={this.onClick}><img src={tileToImageUrl[this.props.tile]} /></td>);
-        }
+var Cell = require('./Cell');
 
-
-    }
-});
-
-var OPEN = '.';
-var MINE = '3';
-var ENCAMP = '@';
-var tiles = [OPEN, MINE, ENCAMP];
-var tileToImageUrl = {};
-tileToImageUrl[OPEN] = 'static/images/open.png';
-tileToImageUrl[MINE] = 'static/images/mine.png';
-tileToImageUrl[ENCAMP] = 'static/images/encampment.png';
-
+var constants = require('./constants');
 
 function xAxis(x, y, height, width) {
-    return !(y < (height / 2) + 1);
+    return !(y < (height / 2));
+}
+
+function xAxisMirrorCell(x, y, height, width) {
+    console.log('here', y);
+    if (y < height / 2) {
+        console.log('here2');
+        y = height - y - 1;
+        console.log(y)
+    }
+    return [[x, y]];
 }
 
 function yAxis(x, y, height, width) {
-    return !(x < (width / 2) + 1);
+    return !(x < (width / 2));
 }
+
+function yAxisMirrorCell(x, y, height, width) {
+    if (x < width / 2) {
+        x = width - x - 1;
+    }
+    return [[x, y]];
+}
+
+var STATE = {
+    NORMAL: 'normal',
+    PLACE_HQ: 'place_hq'
+};
 
 var MapEditor = React.createClass({
     propTypes: {
@@ -54,19 +47,57 @@ var MapEditor = React.createClass({
         for (var i = 0; i < this.props.width; i++) {
             map.push([]);
             for (var j = 0; j < this.props.height; j++) {
-                map[i].push(OPEN);
+                map[i].push(constants.OPEN);
             }
         }
         var mirror = xAxis;
+        var mirrorCell = xAxisMirrorCell;
+        if (this.props.symmetry === constants.symmetryModes[1]) {
+            mirror = yAxis;
+            mirrorCell = yAxisMirrorCell;
+        }
+        map[1][1] = 'a';
+        var b = mirrorCell(1, 1, this.props.height, this.props.width)[0];
+        map[b[0]][b[1]] = 'b';
         return ({
             isMirror: mirror,
+            mirrorCell: mirrorCell,
+            state: STATE.NORMAL,
             map: map
         })
     },
+    getNextTiles: function(tile) {
+        if (this.state.state === STATE.PLACE_HQ) {
+            this.setState({
+                state: STATE.NORMAL
+            });
+            return [constants.A_HQ, constants.B_HQ];
+        }
+        else if (tile === constants.B_HQ) {
+            this.setState({
+                state: STATE.PLACE_HQ
+            });
+            return [constants.OPEN, constants.OPEN];
+        }
+        else if (tile === constants.A_HQ) {
+            return [constants.B_HQ, constants.A_HQ];
+        }
+        else {
+            var nextTileIndex = (constants.tiles.indexOf(tile) + 1) % 3;
+            var nextTile = constants.tiles[nextTileIndex];
+            return [nextTile, nextTile];
+        }
+    },
     handleCellClick: function(x, y, tileType) {
         var map = this.state.map;
-        var tileIndex = (tiles.indexOf(tileType) + 1) % 3;
-        map[x][y] = tiles[tileIndex];
+        var nextTiles = this.getNextTiles(tileType);
+        map[x][y] = nextTiles[0];
+
+        var mirrors = this.state.mirrorCell(x, y, this.props.height, this.props.width);
+        mirrors.forEach(function(cell) {
+            map[cell[0]][cell[1]] = nextTiles[1];
+        }.bind(this));
+
         this.setState({map: map});
     },
     render: function() {
@@ -74,7 +105,6 @@ var MapEditor = React.createClass({
         for (var i = 0; i < this.props.width; i++) {
             var cells = [];
             for (var j = 0; j < this.props.height; j++) {
-                console.log(i, j, this.state.isMirror(i, j, this.state.height, this.state.width));
                 if (this.state.isMirror(i, j, this.props.height, this.props.width)) {
                     cells.push(<Cell x={i} y={j} mirror={true} tile={this.state.map[i][j]} />);
                 } else {
