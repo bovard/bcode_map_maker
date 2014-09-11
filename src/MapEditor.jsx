@@ -9,25 +9,23 @@ var Cell = require('./Cell');
 var createXML = require('./createXML');
 var constants = require('./constants');
 
-function xAxis(x, y, height, width) {
+function yAxis(x, y, height, width) {
     return !(y < (height / 2));
 }
 
-function xAxisMirrorCell(x, y, height, width) {
+function yAxisMirrorCell(x, y, height, width) {
     console.log('here', y);
     if (y < height / 2) {
-        console.log('here2');
         y = height - y - 1;
-        console.log(y)
     }
     return [[x, y]];
 }
 
-function yAxis(x, y, height, width) {
+function xAxis(x, y, height, width) {
     return !(x < (width / 2));
 }
 
-function yAxisMirrorCell(x, y, height, width) {
+function xAxisMirrorCell(x, y, height, width) {
     if (x < width / 2) {
         x = width - x - 1;
     }
