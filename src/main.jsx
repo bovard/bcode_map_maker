@@ -21,19 +21,25 @@ var Main = React.createClass({
             symmetry: constants.symmetryModes[0]
         }
     },
-    createNewMap: function(height, width, symmetry) {
+    createNewMap: function(height, width, symmetry, name) {
         this.setState({
             status: STATUS.CREATING,
             height: height,
             width: width,
-            symmetry: symmetry
+            symmetry: symmetry,
+            name: name
         });
     },
     render: function() {
         if (this.state.status === STATUS.INIT) {
             return (<CreateNew createMap={this.createNewMap} />);
         } else if (this.state.status === STATUS.CREATING) {
-            return (<MapEditor height={this.state.height} width={this.state.width} symmetry={this.state.symmetry} />);
+            return (
+                <MapEditor
+                    height={this.state.height}
+                    width={this.state.width}
+                    name={this.state.name}
+                    symmetry={this.state.symmetry}  />);
         }
     }
 });

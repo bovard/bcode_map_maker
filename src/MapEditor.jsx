@@ -1,8 +1,12 @@
 /** @jsx React.DOM */
 var React = require('react');
 
+var Button = require('react-bootstrap').Button;
+var Well = require('react-bootstrap').Well;
+
 var Cell = require('./Cell');
 
+var createXML = require('./createXML');
 var constants = require('./constants');
 
 function xAxis(x, y, height, width) {
@@ -39,7 +43,8 @@ var MapEditor = React.createClass({
     propTypes: {
         symmetry: React.PropTypes.string.isRequired,
         height: React.PropTypes.number.isRequired,
-        width: React.PropTypes.number.isRequired
+        width: React.PropTypes.number.isRequired,
+        name: React.PropTypes.string.isRequired
         //tiles: React.PropTypes.array.isRequired
     },
     getInitialState: function() {
@@ -100,6 +105,25 @@ var MapEditor = React.createClass({
 
         this.setState({map: map});
     },
+    getMapString: function() {
+        var rows = [];
+        for (var i = 0; i < this.props.width; i++) {
+            var row = '';
+            for (var j = 0; j < this.props.height; j++) {
+                row += this.state.map[i][j];
+            }
+            rows.push(row)
+        }
+        return rows.join('\n');
+    },
+    exportMap: function() {
+        var mapString = this.getMapString()
+        var mapFile = createXML(this.props.height, this.props.width, mapString);
+        var pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(mapFile));
+        pom.setAttribute('download', this.props.name + '.xml');
+        pom.click();
+    },
     render: function() {
         var tableContents = [];
         for (var i = 0; i < this.props.width; i++) {
@@ -114,13 +138,14 @@ var MapEditor = React.createClass({
             tableContents.push(<tr>{cells}</tr>);
         }
         return (
-            <table>
-                <tbody>
-                    {tableContents}
-                </tbody>
-            </table>
-
-
+            <Well>
+                <table>
+                    <tbody>
+                        {tableContents}
+                    </tbody>
+                </table>
+                <Button onClick={this.exportMap} bsStyle="success">Export</Button>
+            </Well>
         )
     }
 });
