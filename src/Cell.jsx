@@ -17,7 +17,7 @@ var Cell = React.createClass({
     render: function() {
         var td;
         if (this.props.mirror) {
-            return (<td><img style={{height: '20px', opacity: 0.4}} src={tileToImageUrl[this.props.tile]} /></td>);
+            return (<td><img style={{height: '20px', opacity: 0.65}} src={tileToImageUrl[this.props.tile]} /></td>);
         } else {
             return (<td onClick={this.onClick}><img style={{height: '20px'}} src={tileToImageUrl[this.props.tile]} /></td>);
         }
