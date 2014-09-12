@@ -23,12 +23,6 @@ var CreateNew = React.createClass({
         var options = constants.symmetryModes.map(function(mode) {
             return (<option key={mode} value ={mode}>{mode}</option>);
         });
-        var hSizeOptions = [];
-        var wSizeOptions = [];
-        for (var i = 20; i <=70; i++) {
-            hSizeOptions.push(<option key={'h' + i} value={i}>{i}</option>);
-            wSizeOptions.push(<option key={'w' + i} value={i}>{i}</option>);
-        }
         return (
             <Well>
             <h2>Welcome to BattleCode Map Maker!</h2>
@@ -41,21 +35,19 @@ var CreateNew = React.createClass({
                     wrapperClassName="col-xs-4"
                     ref="name" />
                 <Input
-                    type="select"
+                    type="text"
                     label="Map Width"
                     labelClassName="col-xs-2"
                     wrapperClassName="col-xs-4"
-                    ref="width">
-                    {wSizeOptions}
-                </Input>
+                    help="Must be between 20 and 70 inclusive to be official"
+                    ref="width" />
                 <Input
-                    type="select"
+                    type="text"
                     label="Map Height"
                     labelClassName="col-xs-2"
                     wrapperClassName="col-xs-4"
-                    ref="height">
-                    {hSizeOptions}
-                </Input>
+                    help="Must be between 20 and 70 inclusive to be official"
+                    ref="height" />
                 <Input
                     type="select"
                     label="Symmetry"
