@@ -14,7 +14,11 @@ var createXML = require('./createXML');
 var constants = require('./constants');
 
 var mapConstraints = [
-    '## Map Constraints',
+    '### Instructions',
+    '  - Click to toggle a cell',
+    '  - Click and drag to toggle a bunch of cells',
+    '  - Click the hq to switch, or replace',
+    '### Map Constraints',
     'Official maps used in scrimmages and tournaments must all satisfy the following conditions.',
     '  - Maps are completely symmetric either by reflection or 180 degree rotation.',
     '  - The width and height of the map are guaranteed to be between 20 and 70, inclusive.',
@@ -70,7 +74,8 @@ function reverseDiagMirrorCell(x, y, height, width) {
 
 var STATE = {
     NORMAL: 'normal',
-    PLACE_HQ: 'place_hq'
+    PLACE_HQ: 'place_hq',
+    MOUSE_DOWN: 'mouse_down'
 };
 
 var MapEditor = React.createClass({
@@ -168,6 +173,34 @@ var MapEditor = React.createClass({
     startOver: function() {
         this.props.startOver();
     },
+    handleMouseDown: function(x, y) {
+        this.setState({start: {x: x, y: y}, dragState: STATE.MOUSE_DOWN});
+    },
+    handleMouseUp: function(x, y) {
+        if (this.state.dragState === STATE.MOUSE_DOWN) {
+            this.setState({dragState: STATE.NORMAL});
+            this.handleRegion(
+                Math.min(this.state.start.x, x), 
+                Math.min(this.state.start.y, y), 
+                Math.max(this.state.start.x, x),
+                Math.max(this.state.start.y, y)
+            );
+        }
+    },
+    handleRegion: function(startX, startY, endX, endY) {
+        if (startX === endX && startY === endY) {
+            this.handleCellClick(startX, startY, this.state.map[startX][startY]);
+        } else if (this.state.state !== STATE.PLACE_HQ) {
+            for (var i = startX; i <= endX; i++) {
+                for (var j = startY; j <= endY; j++) {
+                    var tile = this.state.map[i][j];
+                    if (tile !== constants.A_HQ && tile !== constants.B_HQ) {
+                        this.handleCellClick(i, j, this.state.map[i][j]);
+                    }
+                }
+            }
+        }
+    },
     render: function() {
         var tableContents = [];
         for (var i = 0; i < this.props.width; i++) {
@@ -176,7 +209,7 @@ var MapEditor = React.createClass({
                 if (this.state.isMirror(i, j, this.props.height, this.props.width)) {
                     cells.push(<Cell x={i} y={j} mirror={true} tile={this.state.map[i][j]} />);
                 } else {
-                    cells.push(<Cell x={i} y={j} mirror={false} onClick={this.handleCellClick} tile={this.state.map[i][j]} />);
+                    cells.push(<Cell x={i} y={j} mirror={false} onMD={this.handleMouseDown} onMU={this.handleMouseUp} tile={this.state.map[i][j]} />);
                 }
             }
             tableContents.push(<tr>{cells}</tr>);
