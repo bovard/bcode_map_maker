@@ -28,7 +28,7 @@ var Main = React.createClass({
             width: width,
             symmetry: symmetry,
             name: name || 'test',
-            mirrored: mirrored === 'on'
+            mirrored: mirrored === 'off'
         });
     },
     startOver: function() {
