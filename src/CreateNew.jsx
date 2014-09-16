@@ -15,7 +15,8 @@ var CreateNew = React.createClass({
             parseInt(this.refs.width.getValue()),
             parseInt(this.refs.height.getValue()),
             this.refs.symmetry.getValue(),
-            this.refs.name.getValue()
+            this.refs.name.getValue(),
+            this.refs.mirrored.getValue()
         );
         return false;
     },
@@ -23,6 +24,10 @@ var CreateNew = React.createClass({
         var options = constants.symmetryModes.map(function(mode) {
             return (<option key={mode} value ={mode}>{mode}</option>);
         });
+        var trueFalse = [
+            <option key='false' value='off'>Off</option>,
+            <option key='true' value='on'>On</option>
+        ];
         return (
             <Well>
             <h2>Welcome to BattleCode Map Maker!</h2>
@@ -31,12 +36,14 @@ var CreateNew = React.createClass({
                 <Input
                     type="text"
                     label="Map Name"
+                    defaultValue="test"
                     labelClassName="col-xs-2"
                     wrapperClassName="col-xs-4"
                     ref="name" />
                 <Input
                     type="text"
                     label="Map Width"
+                    defaultValue="20"
                     labelClassName="col-xs-2"
                     wrapperClassName="col-xs-4"
                     help="Must be between 20 and 70 inclusive to be official"
@@ -44,6 +51,7 @@ var CreateNew = React.createClass({
                 <Input
                     type="text"
                     label="Map Height"
+                    defaultValue="20"
                     labelClassName="col-xs-2"
                     wrapperClassName="col-xs-4"
                     help="Must be between 20 and 70 inclusive to be official"
@@ -55,6 +63,14 @@ var CreateNew = React.createClass({
                     wrapperClassName="col-xs-4"
                     ref="symmetry">
                     {options}
+                </Input>
+                <Input
+                    type="select"
+                    label="Mirror Mode"
+                    labelClassName="col-xs-2"
+                    wrapperClassName="col-xs-4"
+                    ref="mirrored">
+                    {trueFalse}
                 </Input>
                 <Input type="submit"
                     className="btn-success"
