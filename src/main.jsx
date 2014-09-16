@@ -21,13 +21,14 @@ var Main = React.createClass({
             symmetry: constants.symmetryModes[0]
         }
     },
-    createNewMap: function(height, width, symmetry, name) {
+    createNewMap: function(height, width, symmetry, name, mirrored) {
         this.setState({
             status: STATUS.CREATING,
             height: height,
             width: width,
             symmetry: symmetry,
-            name: name || 'test'
+            name: name || 'test',
+            mirrored: mirrored === 'on'
         });
     },
     startOver: function() {
@@ -43,7 +44,8 @@ var Main = React.createClass({
                     height={this.state.height}
                     width={this.state.width}
                     name={this.state.name}
-                    symmetry={this.state.symmetry}  />);
+                    symmetry={this.state.symmetry}
+                    mirrored={this.state.mirrored}  />);
         }
     }
 });

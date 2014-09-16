@@ -35,10 +35,12 @@ function yAxis(x, y, height, width) {
     return !(y < (height / 2));
 }
 
-function yAxisMirrorCell(x, y, height, width) {
-    console.log('here', y);
+function yAxisMirrorCell(x, y, height, width, mirrored) {
     if (y < height / 2) {
         y = height - y - 1;
+    }
+    if (mirrored) {
+        x = width - x - 1;
     }
     return [[x, y]];
 }
@@ -47,9 +49,12 @@ function xAxis(x, y, height, width) {
     return !(x < (width / 2));
 }
 
-function xAxisMirrorCell(x, y, height, width) {
+function xAxisMirrorCell(x, y, height, width, mirrored) {
     if (x < width / 2) {
         x = width - x - 1;
+    }
+    if (mirrored) {
+        y = height - y - 1;
     }
     return [[x, y]];
 }
@@ -59,7 +64,10 @@ function diag(x, y, height, width) {
     return (y > x);
 }
 
-function diagMirrorCell(x, y, height, width) {
+function diagMirrorCell(x, y, height, width, mirrored) {
+    if (mirrored) {
+        return reverseDiagMirrorCell(y, x, height, width, false);
+    }
     return [[y, x]];
 }
 
@@ -67,9 +75,11 @@ function reverseDiag(x, y, height, width) {
     return !(x + y < height);
 }
 
-function reverseDiagMirrorCell(x, y, height, width) {
+function reverseDiagMirrorCell(x, y, height, width, mirrored) {
+    if (mirrored) {
+        return diagMirrorCell(height - y - 1, width - x - 1, height, width, false);
+    }
     return [[height - y - 1, width - x - 1]];
-
 }
 
 var STATE = {
@@ -84,6 +94,7 @@ var MapEditor = React.createClass({
         height: React.PropTypes.number.isRequired,
         width: React.PropTypes.number.isRequired,
         name: React.PropTypes.string.isRequired,
+        mirrored: React.PropTypes.bool.isRequired,
         startOver: React.PropTypes.func.isRequired
         //tiles: React.PropTypes.array.isRequired
     },
@@ -108,7 +119,7 @@ var MapEditor = React.createClass({
             mirrorCell = reverseDiagMirrorCell;
         }
         map[5][1] = 'a';
-        var b = mirrorCell(5, 1, this.props.height, this.props.width)[0];
+        var b = mirrorCell(5, 1, this.props.height, this.props.width, this.props.mirrored)[0];
         map[b[0]][b[1]] = 'b';
         return ({
             isMirror: mirror,
@@ -144,7 +155,7 @@ var MapEditor = React.createClass({
         var nextTiles = this.getNextTiles(tileType);
         map[x][y] = nextTiles[0];
 
-        var mirrors = this.state.mirrorCell(x, y, this.props.height, this.props.width);
+        var mirrors = this.state.mirrorCell(x, y, this.props.height, this.props.width, this.props.mirrored);
         mirrors.forEach(function(cell) {
             map[cell[0]][cell[1]] = nextTiles[1];
         }.bind(this));
