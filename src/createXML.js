@@ -2,7 +2,7 @@ function createXML(height, width, mapString) {
     return [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<map height="' + width + '" width="' + height + '">',
-        '    <game seed="9977882" rounds="2000"/>',
+        '    <game seed="' + parseInt(Math.random() * 1000000) + '" rounds="2000"/>',
         '    <symbols>',
         '        <symbol terrain="LAND" type="TERRAIN" character="."/>',
         '        <symbol team="NEUTRAL" type="MINE" character="3"/>',
